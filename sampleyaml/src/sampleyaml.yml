@@ -13,6 +13,29 @@ simplekey: simplevalue
 100: "my age is"
 spendmoney: 23.57
 
+# rendering numbers as different types:  use "!!"
+age: !!float 23   # result in float value of 23.0
+gpa: !!str 3.5    # result in string value of "3.5" and not a number 3.5
+
+# numbers can use number separators "_"
+big_numer: 1_000_000.00
+
+# null is an accepted value
+myvar: null
+
+# hex value
+myhex: 0x34 # decimal value is 52
+
+# octal value
+myoct: 056  #decimal value is 46
+
+#other types:
+canonical: 1.23015e+3
+exponential: 12.3015e+02
+fixed: 1230.15
+negative infinity: -.inf
+not a number: .NaN
+
 #
 #String
 #
@@ -32,7 +55,7 @@ stringLineWithSpaces: this line  has        spaces ....    .......       .....
 # LEARNING: REMEMBER: "|" looks like stopping, ">" looks like continuing. | = "\n", > = " "
 # "|" means concatenated all lines with "\n" after each line, except the last line
 #
-# this is called [Literal blocks]
+# "|" is called [Block scalar indicator]
 multiline_ConcateateWithNewLine: |
   this is a multiple line
   here is line 2
@@ -41,7 +64,7 @@ multiline_ConcateateWithNewLine: |
 # "this is a multiple line\nhere is line 2\nhere is line3"
 
 # multi-line string: ">" means concatenate all the lines  with a space after each line, except last line
-# this is called [folded] style
+# ">" is  called [Folded] scalar indicator
 multiline_ConcateateNoNewLine: >
   this is a multiple line
   here is line 2
@@ -56,13 +79,6 @@ shellScriptOnOneLine:
   - |
     #!bin/bash -e
     echo "hello world" ${path}
-
-#
-#Comments
-#
-# comments are using the hash
-# you can use it at any part of the KV
-myage: 23.34    # this is a comment to the right of the KV
 
 
 #
@@ -83,8 +99,20 @@ datetime: 2001-12-15T02:59:43.1Z
 datetime_with_spaces: 2001-12-14 21:59:43.10 -5
 date: 2002-12-14
 
+
 #
-# Object blocks
+#Comments
+#
+# comments are using the hash
+# you can use it at any part of the KV
+myage: 23.34    # this is a comment to the right of the KV
+
+# Key Differences: List vs Dictionary
+#     Dictionary is unordered
+#     List are ordered
+
+#
+# Object blocks, aka [Dictionary]: a collection of KV pairs, keys are case sensitive
 #
 MyObject:
   name: attribute 1
@@ -126,10 +154,11 @@ url parts:       # application should use this object block to construct the ful
   machine: *DEFAULT_MACHINE
   db: *DEFAULT_DB
 
+
+
 #
 # Lists
 #
-
 
 
 # LEARNING: the Dash Space is a List Block Indicator, so use it if you want to create a list
@@ -197,3 +226,47 @@ friends:
   -                 # Method 3
     name: yat
     age: 51
+
+
+
+#
+# Anchor Alias
+#  Anchors: "&"    # sets up a variable
+#  Alias: "*"      # reference an anchor name
+#  Merge: "<<:"     # merge keys from another mapping
+#
+# 1. you can reference value
+myrefValue: &MY_VALUE 2.3   # creates a alias to 2.3 and this alias is called MY_VALUE
+
+usingRef: *MY_VALUE     # usingRef=2.3
+
+# 2. you can reference any entire block
+base: &base
+  var1: value1
+  var2: value2
+
+foo:
+  <<: *base  # foo will have {var1: value1, var2: value2}, it will NOT have base
+  <<: *MY_VALUE
+  addtionalItems: myAddtionalValue
+
+
+
+#
+# Complex Keys
+#
+# keys can be complex string, you can use "?" before
+# A question mark and space (“? ”) indicate a complex mapping key.
+# Within a block collection, key: value pairs can
+# start immediately following the dash, colon, or question mark.
+#
+# Example:
+? - Detroit Tigers
+  - Chicago cubs
+  :
+  - 2001-07-23
+
+? [ New York Yankees,
+    Atlanta Braves ]
+  : [ 2001-07-02, 2001-08-12,
+      2001-08-14 ]
