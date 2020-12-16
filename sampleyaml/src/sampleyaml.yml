@@ -1,0 +1,199 @@
+#
+# Key Value pairs:
+#
+
+# aka scalar
+key: value
+
+# KV: strings for keys and values
+simplekey: simplevalue
+
+# KV: numeric keys and/or values
+23: 45
+100: "my age is"
+spendmoney: 23.57
+
+#
+#String
+#
+# string can be placed in single or double quotes or no quotes
+singlequote: 'single quote line'
+doublequote: "double quotes iine"
+no quotes: this line has quotes around it
+
+# special characters must be in quotes
+newlinechar: "this line has a end of line character \n"
+
+
+# spaces are preserved even if you don't use quotes
+stringLineWithSpaces: this line  has        spaces ....    .......       .....
+
+# Multi-line string
+# LEARNING: REMEMBER: "|" looks like stopping, ">" looks like continuing. | = "\n", > = " "
+# "|" means concatenated all lines with "\n" after each line, except the last line
+#
+# this is called [Literal blocks]
+multiline_ConcateateWithNewLine: |
+  this is a multiple line
+  here is line 2
+  here is line3
+# resulting value is:
+# "this is a multiple line\nhere is line 2\nhere is line3"
+
+# multi-line string: ">" means concatenate all the lines  with a space after each line, except last line
+# this is called [folded] style
+multiline_ConcateateNoNewLine: >
+  this is a multiple line
+  here is line 2
+  here is line3
+# result values is
+# "this is a multiple line here is line 2 here is line3 then should appear as is"
+
+# Usage of multi-line yml example: you can specify a shell script as an attribute for example
+shellScriptOnOneLine:
+  - bash
+  - -c
+  - |
+    #!bin/bash -e
+    echo "hello world" ${path}
+
+#
+#Comments
+#
+# comments are using the hash
+# you can use it at any part of the KV
+myage: 23.34    # this is a comment to the right of the KV
+
+
+#
+# Boolean
+#
+myboolean: false
+myboolean2: true
+YesAsTrue: yes   #translated to true
+NoAsFalse: no    #translated to false
+
+OnAsTrue: on    #translated to true
+OffAsFalse: off    #translated to false
+
+#
+# Date Time
+#
+datetime: 2001-12-15T02:59:43.1Z
+datetime_with_spaces: 2001-12-14 21:59:43.10 -5
+date: 2002-12-14
+
+#
+# Object blocks
+#
+MyObject:
+  name: attribute 1
+  server: attribute 2
+  port: attribute 3
+
+ObjectWithNull:
+  name:       # value is null
+  server:     # value is null
+  port: 9000      # value is 900
+
+# example usage of Blocks:
+curl_command:
+  command_name: curl
+  command_arg:
+    firstOption: -c
+    descriptionMessage: "this is a curl command"
+    sleep: 30   # sleep for 30 seconds
+
+# output in json is this:
+#  "curl_command": {
+#    "command_arg": {
+#      "descriptionMessage": "this is a curl command",
+#      "firstOption": "-c",
+#      "sleep": 30
+#    },
+#    "command_name": "curl"
+#  }
+
+# example usage of blocks: URL string interpolation can not be done in YML but you can provide
+# the parts and let the application construct the full url
+# this is good because the config should not have to know the logic to construct a url
+# the config should just provide data, not logic(of constructing a full url)
+machine: &DEFAULT_MACHINE 129.45.128.1
+db: &DEFAULT_DB learnspring
+
+url parts:       # application should use this object block to construct the full url
+  mysqlroot:  jdbc:mysql://
+  machine: *DEFAULT_MACHINE
+  db: *DEFAULT_DB
+
+#
+# Lists
+#
+
+
+
+# LEARNING: the Dash Space is a List Block Indicator, so use it if you want to create a list
+#     Remember: Dash is START OF AN ITEM ON A LIST, if you want another item, just start another dash space
+#     so construct it like this:
+#       - item1: item1 value
+#       - item2: item2 value
+#
+#  LEARNING: all KVs' after start of a Dash Space: is an attribute of that ITEM
+#         - itemAttribute1: itemAttribute1Value
+#           itemAttribute2: itemAttribute2Value
+#           itemAttribute3: itemAttribute3Value
+
+# the above json is the same as this:
+MyObject1:
+  - name: attribute 1   #IMPORTANT:space needed after dash "-", the dash signal start of a list
+    server: server1
+    port: 1
+                        # you can have blank lines as separators
+  - name: attribute 1
+    port: 2             #attributes not in same order as item 1
+    server: server2
+
+  - somethingdifferent: I can have different mixed attribute in list
+    secondattribute: 3
+# the above is equivalent to Json below:
+#  {
+#    "MyObject1": [       # notice the [ ] 's indicating a json list
+#    {
+#      "server": "server1",
+#      "port": 1,
+#      "name": "attribute 1"
+#    },
+#    {
+#      "port": 2,
+#      "name": "attribute 1",
+#      "server": "server2"
+#    },
+#    {
+#      "secondattribute": 3,
+#      "somethingdifferent": "I can have different mixed attribute in list"
+#    }
+#    ]   #notice the closing "]"
+#  }
+
+#  sub-lists: 2 ways of using sub-lists
+microservices:
+  - name: name1
+    server: server1
+    port: [23, 34, 45]  # sub-list within microservices list
+
+  - name: name2
+    server: server1
+    port:
+      - 100            # another way to using sub-list
+      - 200
+      - 300
+
+# List can be written in 3 days:
+friends:
+  - name: Ken  # method 1
+    age: 50
+  - {name: Daniel, age: 51}  # method 2, this seems to be good way to write compact lists for small # attributes
+
+  -                 # Method 3
+    name: yat
+    age: 51
